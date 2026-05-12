@@ -13,10 +13,11 @@
 | Category | Technology | Version |
 |----------|------------|---------|
 | Language | Java | 21 LTS |
-| Framework | Spring WebFlux | 3.3+ |
-| Security | Spring Security + Spring Authorization Server | - |
+| Framework | Spring WebFlux | 4.0+ |
+| Security | Spring Security | - |
 | Database | PostgreSQL | 16+ |
 | ORM | Spring Data R2DBC (Reactive) | - |
+| Migration | Flyway | - |
 | JWT | jjwt | 0.12.5 |
 | 2FA | dev.samstevens.totp | 1.7.1 |
 | Build | Maven | 3.9+ |
@@ -457,7 +458,77 @@ CREATE TABLE user_consents (
 
 ---
 
-## 7. Frontend Integration
+## 6.1 Database Migration (Flyway)
+
+### 6.1.1 Overview
+
+Flyway is used for version-controlled database migrations, ensuring consistent schema across environments.
+
+### 6.1.2 Migration Structure
+
+```
+src/main/resources/db/migration/
+├── V1__create_users_table.sql
+├── V2__create_sessions_table.sql
+├── V3__create_audit_logs_table.sql
+├── V4__create_policies_table.sql
+└── V5__create_user_consents_table.sql
+```
+
+### 6.1.3 Migration Naming Convention
+
+| Prefix | Description |
+|--------|-------------|
+| `V` | Versioned migration |
+| `U` | Undo migration |
+| `R` | Repeatable migration |
+
+### 6.1.4 Configuration
+
+```yaml
+spring:
+  flyway:
+    enabled: true
+    url: ${DB_HOST_FLYWAY}
+    user: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    baseline-version: 0
+    validate-on-migrate: true
+```
+
+### 6.1.5 Migration Example
+
+```sql
+-- V1__create_users_table.sql
+CREATE TABLE users (
+    id UUID PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    totp_secret VARCHAR(255),
+    role VARCHAR(50) NOT NULL,
+    attributes JSONB,
+    tenant_id UUID,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP
+);
+
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_users_tenant_id ON users(tenant_id);
+```
+
+### 6.1.6 Profile-specific Configuration
+
+| Profile | Baseline | Validate |
+|---------|----------|----------|
+| dev | true | true |
+| test | true | false |
+| prod | false | true |
+
+---
+
+## 8. Frontend Integration
 
 ### 7.1 NextAuth.js Flow
 
@@ -487,7 +558,7 @@ CREATE TABLE user_consents (
 
 ---
 
-## 8. Real-Time Communication (SSE)
+## 9. Real-Time Communication (SSE)
 
 ### 8.1 SSE Architecture
 
@@ -529,7 +600,7 @@ useEffect(() => {
 
 ---
 
-## 9. Deployment
+## 10. Deployment
 
 ### 9.1 Docker
 
@@ -561,7 +632,7 @@ Services:
 
 ---
 
-## 10. Summary
+## 11. Summary
 
 | Layer | Backend | Frontend |
 |-------|---------|----------|
