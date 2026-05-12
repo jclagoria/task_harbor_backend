@@ -1,0 +1,74 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: task-harbor
+  config:
+    activate:
+      on-profile: dev
+
+  r2dbc:
+    url: ${DB_R2DBC_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    pool:
+      enabled: true
+      initial-size: 10
+      max-size: 100
+
+  flyway:
+    enabled: true
+    url: ${DB_HOST_FLYWAY}
+    user: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    baseline-version: 0
+    validate-on-migrate: true
+
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST_DEV}
+      port: ${SPRING_DATA_REDIS_PORT_DEV}
+      username: ${SPRING_DATA_REDIS_USERNAME_DEV}
+      password: ${SPRING_DATA_REDIS_PASSWORD_DEV}
+      database: ${SPRING_DATA_REDIS_DATABASE_DEV}
+      timeout: ${SPRING_DATA_REDIS_TIMEOUT_DEV}
+      client-name: ${SPRING_DATA_REDIS_CLIENT_NAME_DEV}
+      ssl:
+        enabled: ${SPRING_DATA_REDIS_SSL_ENABLED_DEV}
+      lettuce:
+        pool:
+          max-active: ${SPRING_DATA_REDIS_LETTUCE_POOL_MAX_ACTIVE_DEV}
+          max-idle: ${SPRING_DATA_REDIS_LETTUCE_POOL_MAX_IDLE_DEV}
+          min-idle: ${SPRING_DATA_REDIS_LETTUCE_POOL_MIN_IDLE_DEV}
+          max-wait: ${SPRING_DATA_REDIS_LETTUCE_POOL_MAX_WAIT_DEV}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,caches,loggers
+  endpoint:
+    health:
+      show-details: when_authorized
+      probes:
+        enabled: true
+  health:
+    redis:
+      enabled: true
+    db:
+      enabled: true
+  info:
+    env:
+      enabled: true
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+logging:
+  level:
+    com.taskharbor: DEBUG
+    org.springframework.r2dbc: DEBUG

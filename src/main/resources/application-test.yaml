@@ -1,0 +1,53 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: task-harbor
+  config:
+    activate:
+      on-profile: test
+
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/taskharbor_test
+    username: test
+    password: test
+    pool:
+      enabled: false
+      initial-size: 2
+      max-size: 10
+
+  flyway:
+    enabled: true
+    url: jdbc:postgresql://localhost:5432/taskharbor_test
+    user: test
+    password: test
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    baseline-version: 0
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 1
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+  health:
+    redis:
+      enabled: false
+    db:
+      enabled: true
+
+logging:
+  level:
+    com.taskharbor: DEBUG
+    org.springframework.r2dbc: DEBUG
+    org.flywaydb: DEBUG
