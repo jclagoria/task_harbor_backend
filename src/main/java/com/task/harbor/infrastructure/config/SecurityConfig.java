@@ -25,7 +25,10 @@ public class SecurityConfig {
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/api/auth/register", "/api/auth/login", "/api/auth/refresh").permitAll()
                         .pathMatchers("/actuator/**").permitAll()
-                        .pathMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
+                        .pathMatchers("/v3/**").permitAll()
+                        .pathMatchers("/swagger-ui/**").permitAll()
+                        .pathMatchers("/swagger-ui.html").permitAll()
+                        .pathMatchers("/webjars/**").permitAll()
                         .anyExchange().authenticated()
                 )
                 .addFilterAt(jwtAuthenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION)
