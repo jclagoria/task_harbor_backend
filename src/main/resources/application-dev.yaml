@@ -83,3 +83,18 @@ logging:
     com.task.harbor: DEBUG
     org.springframework.r2dbc: DEBUG
     org.flywaydb: DEBUG
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    show-auth-ext: true
+    supportedSubmitMethods:
+      - get
+      - put
+      - post
+      - delete
+      - options
+      - head

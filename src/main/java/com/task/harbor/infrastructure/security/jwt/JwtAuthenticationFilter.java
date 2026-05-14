@@ -24,11 +24,20 @@ public class JwtAuthenticationFilter implements WebFilter {
             "/actuator/health",
             "/actuator/info",
             "/v3/api-docs",
+            "/v3/api-docs.yaml",
+            "/v3/api-docs.json",
             "/swagger-ui",
             "/swagger-ui/",
             "/swagger-ui/index.html",
             "/swagger-ui/swagger-initializer.js",
-            "/webjars/swagger-ui"
+            "/swagger-ui/swagger-ui-bundle.js",
+            "/swagger-ui/swagger-ui-standalone-preset.js",
+            "/swagger-ui/swagger-ui.css",
+            "/webjars/swagger-ui",
+            "/webjars/swagger-ui/",
+            "/webjars/swagger-ui/swagger-ui-bundle.js",
+            "/webjars/swagger-ui/swagger-ui-standalone-preset.js",
+            "/webjars/swagger-ui/swagger-ui.css"
     );
 
     @Override
