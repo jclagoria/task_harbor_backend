@@ -31,7 +31,7 @@ public class SecurityConfig {
                         .pathMatchers("/webjars/**").permitAll()
                         .anyExchange().authenticated()
                 )
-                .addFilterAt(jwtAuthenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION)
+                .addFilterBefore(jwtAuthenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION)
                 .build();
     }
 }
