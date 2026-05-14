@@ -1,4 +1,4 @@
-package com.task.harbor.interface.controller;
+package com.task.harbor.adapter.controller;
 
 import com.task.harbor.application.dto.auth.*;
 import com.task.harbor.application.dto.response.ApiResponse;
@@ -45,7 +45,7 @@ public class AuthController {
     
     @PostMapping("/refresh")
     public Mono<ResponseEntity<ApiResponse<TokenResponse>>> refresh(@RequestBody RefreshRequest request) {
-        return refreshTokenUseCase.execute(request.getRefreshToken())
+        return refreshTokenUseCase.execute(request.refreshToken())
                 .map(token -> ResponseEntity.ok(ApiResponse.success(token)));
     }
     
@@ -59,7 +59,7 @@ public class AuthController {
     public Mono<ResponseEntity<ApiResponse<Boolean>>> verify2fa(
             @RequestHeader("X-User-Id") String userId,
             @RequestBody TotpVerifyRequest request) {
-        return totpUseCase.verify(UUID.fromString(userId), request.getCode())
+        return totpUseCase.verify(UUID.fromString(userId), request.code())
                 .map(result -> ResponseEntity.ok(ApiResponse.success(result)));
     }
 }

@@ -23,6 +23,7 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @ExtendWith(MockitoExtension.class)
 class RefreshTokenUseCaseTest {
@@ -67,12 +68,17 @@ class RefreshTokenUseCaseTest {
                 .tenantId(UUID.randomUUID())
                 .build();
 
-        when(passwordService.hashPassword(anyString())).thenReturn("tokenHash");
+        AtomicInteger callCount = new AtomicInteger(0);
+        when(passwordService.hashPassword(anyString())).thenAnswer(inv -> {
+            if (callCount.getAndIncrement() == 0) {
+                return "tokenHash";
+            }
+            return "newHash";
+        });
         when(sessionRepository.findByRefreshTokenHash("tokenHash")).thenReturn(Mono.just(session));
         when(userRepository.findById(userId)).thenReturn(Mono.just(user));
         when(jwtService.generateAccessToken(anyString(), anyString(), any())).thenReturn("newAccessToken");
         when(jwtService.generateRefreshToken(anyString())).thenReturn("newRefreshToken");
-        when(passwordService.hashPassword(anyString())).thenReturn("newHash");
         when(sessionRepository.save(any(Session.class))).thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
 
         StepVerifier.create(refreshTokenUseCase.execute(refreshToken))
