@@ -75,7 +75,7 @@ app:
     refresh-token-expiry: 604800
   security:
     password-min-length: 8
-    bcrypt-strength: 12
+    bcrypt-strength: 14
     totp-issuer: TaskHarbor
 
 logging:
