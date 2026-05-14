@@ -73,16 +73,17 @@
 			<artifactId>postgresql</artifactId>
 		</dependency>
 
-		<!-- Flyway for Database Migrations -->
+		<!-- Flyway for Database Migrations (Spring Boot 4 requires starter) -->
 		<dependency>
-			<groupId>org.flywaydb</groupId>
-			<artifactId>flyway-core</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-flyway</artifactId>
 		</dependency>
 
 		<!-- Flyway PostgreSQL Support -->
 		<dependency>
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-database-postgresql</artifactId>
+			<scope>runtime</scope>
 		</dependency>
 
 		<!-- OpenAPI Swagger Documentation -->
