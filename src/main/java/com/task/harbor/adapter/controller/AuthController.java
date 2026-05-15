@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
@@ -32,14 +33,12 @@ public class AuthController {
     @PostMapping("/register")
     @Operation(summary = "Register new user", description = "Create a new user account")
     @ApiResponse(
-            responseCode = "200",
+            responseCode = "201",
             description = "User registered successfully",
             content = @Content(schema = @Schema(implementation = ApiResponseService.class)))
-    public Mono<ResponseEntity<ApiResponseService<Object>>> register(@Valid @RequestBody RegisterRequest request) {
+    public Mono<ResponseEntity<ApiResponseService<RegisterResponse>>> register(@Valid @RequestBody RegisterRequest request) {
         return registerUseCase.execute(request)
-                .map(user -> ResponseEntity.ok(ApiResponseService.success(
-                        Map.of("userId", user.getId(), "email", user.getEmail())
-                )));
+                .map(user -> ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseService.success(user)));
     }
 
     @PostMapping("/login")

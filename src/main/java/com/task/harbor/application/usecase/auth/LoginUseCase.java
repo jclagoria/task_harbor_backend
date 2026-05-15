@@ -54,15 +54,10 @@ public class LoginUseCase {
                     
                     String refreshTokenHash = passwordService.hashPassword(refreshToken);
                     
-                    Session session = Session.builder()
-                            .id(UUID.randomUUID())
-                            .userId(user.getId())
-                            .refreshTokenHash(refreshTokenHash)
-                            .createdAt(Instant.now())
-                            .expiresAt(Instant.now().plus(7, ChronoUnit.DAYS))
-                            .build();
+                    Instant now = Instant.now();
+                    Instant expiresAt = now.plus(7, ChronoUnit.DAYS);
                     
-                    return sessionRepository.save(session)
+                    return sessionRepository.insert(user.getId(), refreshTokenHash, now, expiresAt)
                             .thenReturn(new TokenResponse(accessToken, refreshToken, accessTokenExpiry));
                 });
     }

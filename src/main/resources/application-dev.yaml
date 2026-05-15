@@ -80,6 +80,6 @@ app:
 
 logging:
   level:
-    com.task.harbor: DEBUG
+    com.task.harbor: INFO
     org.springframework.r2dbc: INFO
     org.flywaydb: INFO
