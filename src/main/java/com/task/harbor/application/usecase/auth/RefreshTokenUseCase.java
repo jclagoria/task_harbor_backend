@@ -28,7 +28,7 @@ public class RefreshTokenUseCase {
     private long accessTokenExpiry;
     
     public Mono<TokenResponse> execute(String refreshToken) {
-        String tokenHash = passwordService.hashPassword(refreshToken);
+        String tokenHash = passwordService.hashToken(refreshToken);
         
         return sessionRepository.findByRefreshTokenHash(tokenHash)
                 .switchIfEmpty(Mono.error(new IllegalArgumentException("Invalid refresh token")))
@@ -41,12 +41,13 @@ public class RefreshTokenUseCase {
                             .switchIfEmpty(Mono.error(new IllegalArgumentException("User not found")))
                             .flatMap(user -> {
                                 String newAccessToken = jwtService.generateAccessToken(
+                                        user.getId(),
                                         user.getEmail(),
                                         user.getRole(),
                                         user.getTenantId()
                                 );
                                 String newRefreshToken = jwtService.generateRefreshToken(user.getEmail());
-                                String newRefreshTokenHash = passwordService.hashPassword(newRefreshToken);
+                                String newRefreshTokenHash = passwordService.hashToken(newRefreshToken);
                                 
                                 session.setRefreshTokenHash(newRefreshTokenHash);
                                 session.setExpiresAt(Instant.now().plus(7, ChronoUnit.DAYS));

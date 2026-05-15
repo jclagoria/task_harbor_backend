@@ -46,6 +46,7 @@ public class LoginUseCase {
                     }
                     
                     String accessToken = jwtService.generateAccessToken(
+                            user.getId(),
                             user.getEmail(), 
                             user.getRole(), 
                             user.getTenantId()

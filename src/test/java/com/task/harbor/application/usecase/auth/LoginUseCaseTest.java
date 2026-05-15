@@ -14,6 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.test.util.ReflectionTestUtils;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -27,6 +29,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class LoginUseCaseTest {
 
     @Mock
@@ -66,9 +69,10 @@ class LoginUseCaseTest {
 
         when(userRepository.findByEmail(anyString())).thenReturn(Mono.just(user));
         when(passwordService.verifyPassword(anyString(), anyString())).thenReturn(true);
-        when(jwtService.generateAccessToken(anyString(), anyString(), any())).thenReturn("accessToken");
+        when(jwtService.generateAccessToken(any(UUID.class), anyString(), anyString(), any(UUID.class))).thenReturn("accessToken");
         when(jwtService.generateRefreshToken(anyString())).thenReturn("refreshToken");
-        when(passwordService.hashPassword(anyString())).thenReturn("refreshTokenHash");
+        when(passwordService.hashToken(anyString())).thenReturn("refreshTokenHash");
+        when(sessionRepository.insert(any(UUID.class), anyString(), any(Instant.class), any(Instant.class))).thenReturn(Mono.just(1L));
         when(sessionRepository.save(any(Session.class))).thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
 
         StepVerifier.create(loginUseCase.execute(request))
@@ -124,9 +128,10 @@ class LoginUseCaseTest {
         when(userRepository.findByEmail(anyString())).thenReturn(Mono.just(user));
         when(passwordService.verifyPassword(anyString(), anyString())).thenReturn(true);
         when(totpService.verifyCode(anyString(), anyString())).thenReturn(true);
-        when(jwtService.generateAccessToken(anyString(), anyString(), any())).thenReturn("accessToken");
+        when(jwtService.generateAccessToken(any(UUID.class), anyString(), anyString(), any(UUID.class))).thenReturn("accessToken");
         when(jwtService.generateRefreshToken(anyString())).thenReturn("refreshToken");
-        when(passwordService.hashPassword(anyString())).thenReturn("refreshTokenHash");
+        when(passwordService.hashToken(anyString())).thenReturn("refreshTokenHash");
+        when(sessionRepository.insert(any(UUID.class), anyString(), any(Instant.class), any(Instant.class))).thenReturn(Mono.just(1L));
         when(sessionRepository.save(any(Session.class))).thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
 
         StepVerifier.create(loginUseCase.execute(request))

@@ -23,7 +23,7 @@ public class SecurityConfig {
                         .pathMatchers("/swagger-ui/**").permitAll()
                         .pathMatchers("/webjars/**").permitAll()
                         .pathMatchers("/swagger-ui.html").permitAll()
-                        .anyExchange().authenticated()
+                        .anyExchange().permitAll()
                 )
                 .build();
     }

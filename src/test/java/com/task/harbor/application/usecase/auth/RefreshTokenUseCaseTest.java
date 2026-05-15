@@ -69,7 +69,7 @@ class RefreshTokenUseCaseTest {
                 .build();
 
         AtomicInteger callCount = new AtomicInteger(0);
-        when(passwordService.hashPassword(anyString())).thenAnswer(inv -> {
+        when(passwordService.hashToken(anyString())).thenAnswer(inv -> {
             if (callCount.getAndIncrement() == 0) {
                 return "tokenHash";
             }
@@ -77,7 +77,7 @@ class RefreshTokenUseCaseTest {
         });
         when(sessionRepository.findByRefreshTokenHash("tokenHash")).thenReturn(Mono.just(session));
         when(userRepository.findById(userId)).thenReturn(Mono.just(user));
-        when(jwtService.generateAccessToken(anyString(), anyString(), any())).thenReturn("newAccessToken");
+        when(jwtService.generateAccessToken(any(UUID.class), anyString(), anyString(), any(UUID.class))).thenReturn("newAccessToken");
         when(jwtService.generateRefreshToken(anyString())).thenReturn("newRefreshToken");
         when(sessionRepository.save(any(Session.class))).thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
 
@@ -91,7 +91,7 @@ class RefreshTokenUseCaseTest {
 
     @Test
     void execute_InvalidToken() {
-        when(passwordService.hashPassword(anyString())).thenReturn("invalidHash");
+        when(passwordService.hashToken(anyString())).thenReturn("invalidHash");
         when(sessionRepository.findByRefreshTokenHash("invalidHash")).thenReturn(Mono.empty());
 
         StepVerifier.create(refreshTokenUseCase.execute("invalidToken"))
@@ -111,7 +111,7 @@ class RefreshTokenUseCaseTest {
                 .expiresAt(Instant.now().minus(1, ChronoUnit.DAYS))
                 .build();
 
-        when(passwordService.hashPassword(anyString())).thenReturn("tokenHash");
+        when(passwordService.hashToken(anyString())).thenReturn("tokenHash");
         when(sessionRepository.findByRefreshTokenHash("tokenHash")).thenReturn(Mono.just(session));
 
         StepVerifier.create(refreshTokenUseCase.execute(refreshToken))

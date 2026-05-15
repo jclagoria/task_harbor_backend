@@ -28,12 +28,13 @@ public class JwtTokenProvider {
         this.refreshTokenExpiry = refreshTokenExpiry;
     }
 
-    public String generateAccessToken(String email, String role, UUID tenantId) {
+    public String generateAccessToken(UUID userId, String email, String role, UUID tenantId) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + accessTokenExpiry * 1000);
 
         return Jwts.builder()
                 .subject(email)
+                .claim("userId", userId.toString())
                 .claim("role", role)
                 .claim("tenantId", tenantId.toString())
                 .issuedAt(now)

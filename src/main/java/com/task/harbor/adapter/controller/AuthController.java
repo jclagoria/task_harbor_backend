@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -60,6 +61,8 @@ public class AuthController {
     @PostMapping("/logout")
     @Operation(summary = "User logout", description = "Invalidate user session")
     @ApiResponse(responseCode = "200", description = "Logout successful")
+    @ApiResponse(responseCode = "401", description = "Unauthorized: missing or invalid JWT token")
+    @SecurityRequirement(name = "Bearer Authentication")
     public Mono<ResponseEntity<ApiResponseService<Object>>> logout(@RequestHeader("X-User-Id") String userId) {
         return logoutUseCase.execute(UUID.fromString(userId))
                 .thenReturn(ResponseEntity.ok(ApiResponseService.success(null)));
@@ -83,6 +86,8 @@ public class AuthController {
             responseCode = "200",
             description = "2FA secret generated",
             content = @Content(schema = @Schema(implementation = ApiResponseService.class)))
+    @ApiResponse(responseCode = "401", description = "Unauthorized: missing or invalid JWT token")
+    @SecurityRequirement(name = "Bearer Authentication")
     public Mono<ResponseEntity<ApiResponseService<TotpSetupResponse>>> setup2fa(
             @RequestHeader("X-User-Id") String userId) {
         return totpUseCase.setup(UUID.fromString(userId))
@@ -97,6 +102,8 @@ public class AuthController {
             content = @Content(schema = @Schema(implementation = ApiResponseService.class)))
     @ApiResponse(responseCode = "400", description = "Invalid or missing TOTP code")
     @ApiResponse(responseCode = "400", description = "User not found or 2FA not setup")
+    @ApiResponse(responseCode = "401", description = "Unauthorized: missing or invalid JWT token")
+    @SecurityRequirement(name = "Bearer Authentication")
     public Mono<ResponseEntity<ApiResponseService<Boolean>>> verify2fa(
             @RequestHeader("X-User-Id") String userId,
             @RequestBody TotpVerifyRequest request) {

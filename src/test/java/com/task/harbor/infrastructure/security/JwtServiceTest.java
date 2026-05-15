@@ -29,13 +29,14 @@ class JwtServiceTest {
 
     @Test
     void generateAccessToken_DelegateToProvider() {
+        UUID userId = UUID.randomUUID();
         String email = "test@example.com";
         String role = "USER";
         UUID tenantId = UUID.randomUUID();
 
-        when(tokenProvider.generateAccessToken(email, role, tenantId)).thenReturn("accessToken");
+        when(tokenProvider.generateAccessToken(userId, email, role, tenantId)).thenReturn("accessToken");
 
-        String result = jwtService.generateAccessToken(email, role, tenantId);
+        String result = jwtService.generateAccessToken(userId, email, role, tenantId);
 
         assertEquals("accessToken", result);
     }

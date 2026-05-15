@@ -33,6 +33,12 @@ public class TotpUseCase {
     public Mono<Boolean> verify(UUID userId, String code) {
         return userRepository.findById(userId)
                 .switchIfEmpty(Mono.error(new IllegalArgumentException("User not found")))
-                .map(user -> totpService.verifyCode(user.getTotpSecret(), code));
+                .flatMap(user -> {
+                    boolean valid = totpService.verifyCode(user.getTotpSecret(), code);
+                    if (!valid) {
+                        return Mono.error(new IllegalArgumentException("Invalid TOTP code"));
+                    }
+                    return Mono.just(true);
+                });
     }
 }
