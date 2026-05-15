@@ -49,7 +49,7 @@
     <logger name="org.reflections" level="OFF" />
 
     <!-- App only INFO -->
-    <logger name="com.task.harbor" level="INFO" />
+    <logger name="com.task.harbor" level="DEBUG" />
     <logger name="org.springframework.r2dbc" level="INFO" />
     <logger name="org.springframework.data.r2dbc" level="INFO" />
     <logger name="io.r2dbc" level="INFO" />
