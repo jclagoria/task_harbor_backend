@@ -12,8 +12,8 @@ public class JwtService {
 
     private final JwtTokenProvider tokenProvider;
 
-    public String generateAccessToken(String email, String role, UUID tenantId) {
-        return tokenProvider.generateAccessToken(email, role, tenantId);
+    public String generateAccessToken(UUID userId, String email, String role, UUID tenantId) {
+        return tokenProvider.generateAccessToken(userId, email, role, tenantId);
     }
 
     public String generateRefreshToken(String email) {
@@ -39,5 +39,10 @@ public class JwtService {
     public UUID extractTenantId(String token) {
         String tenantId = extractClaims(token).get("tenantId", String.class);
         return tenantId != null ? UUID.fromString(tenantId) : null;
+    }
+
+    public UUID extractUserId(String token) {
+        String userId = extractClaims(token).get("userId", String.class);
+        return userId != null ? UUID.fromString(userId) : null;
     }
 }

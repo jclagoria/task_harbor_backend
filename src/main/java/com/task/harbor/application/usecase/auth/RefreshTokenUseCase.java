@@ -41,6 +41,7 @@ public class RefreshTokenUseCase {
                             .switchIfEmpty(Mono.error(new IllegalArgumentException("User not found")))
                             .flatMap(user -> {
                                 String newAccessToken = jwtService.generateAccessToken(
+                                        user.getId(),
                                         user.getEmail(),
                                         user.getRole(),
                                         user.getTenantId()

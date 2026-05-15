@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
@@ -44,24 +45,35 @@ public class JwtAuthenticationFilter implements WebFilter {
         }
 
         String authHeader = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
-            if (jwtService.validateToken(token)) {
-                String email = jwtService.extractEmail(token);
-                String role = jwtService.extractRole(token);
-
-                log.debug("Valid JWT token for user: {}", email);
-                ServerHttpRequest mutatedRequest = request.mutate()
-                        .header("X-User-Email", email)
-                        .header("X-User-Role", role)
-                        .build();
-
-                return chain.filter(exchange.mutate().request(mutatedRequest).build());
-            }
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            log.warn("Missing or invalid Authorization header for protected path: {}", path);
+            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+            return exchange.getResponse().setComplete();
         }
 
-        log.debug("No valid JWT, passing through chain for path: {}", path);
-        return chain.filter(exchange).doOnTerminate(() -> log.debug("Filter chain completed for: {}", path));
+        String token = authHeader.substring(7);
+        if (!jwtService.validateToken(token)) {
+            log.warn("Invalid JWT token for protected path: {}", path);
+            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+            return exchange.getResponse().setComplete();
+        }
+
+        String email = jwtService.extractEmail(token);
+        String role = jwtService.extractRole(token);
+        String userId = jwtService.extractUserId(token).toString();
+        String tenantId = jwtService.extractTenantId(token) != null 
+                ? jwtService.extractTenantId(token).toString() 
+                : null;
+
+        log.debug("Valid JWT token for user: {}", email);
+        ServerHttpRequest mutatedRequest = request.mutate()
+                .header("X-User-Id", userId)
+                .header("X-User-Email", email)
+                .header("X-User-Role", role)
+                .header("X-Tenant-Id", tenantId)
+                .build();
+
+        return chain.filter(exchange.mutate().request(mutatedRequest).build());
     }
 
     private boolean isPublicPath(String path) {

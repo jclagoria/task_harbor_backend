@@ -77,7 +77,7 @@ class RefreshTokenUseCaseTest {
         });
         when(sessionRepository.findByRefreshTokenHash("tokenHash")).thenReturn(Mono.just(session));
         when(userRepository.findById(userId)).thenReturn(Mono.just(user));
-        when(jwtService.generateAccessToken(anyString(), anyString(), any())).thenReturn("newAccessToken");
+        when(jwtService.generateAccessToken(any(UUID.class), anyString(), anyString(), any(UUID.class))).thenReturn("newAccessToken");
         when(jwtService.generateRefreshToken(anyString())).thenReturn("newRefreshToken");
         when(sessionRepository.save(any(Session.class))).thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
 
