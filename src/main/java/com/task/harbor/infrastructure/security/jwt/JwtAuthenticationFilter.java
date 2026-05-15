@@ -1,6 +1,8 @@
 package com.task.harbor.infrastructure.security.jwt;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
@@ -15,6 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter implements WebFilter {
 
+    private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
     private final JwtService jwtService;
 
     private static final List<String> PUBLIC_PATHS = List.of(
@@ -23,30 +26,21 @@ public class JwtAuthenticationFilter implements WebFilter {
             "/api/auth/refresh",
             "/actuator/health",
             "/actuator/info",
-            "/v3/api-docs",
-            "/v3/api-docs.yaml",
-            "/v3/api-docs.json",
+            "/v3",
             "/swagger-ui",
-            "/swagger-ui/",
-            "/swagger-ui/index.html",
-            "/swagger-ui/swagger-initializer.js",
-            "/swagger-ui/swagger-ui-bundle.js",
-            "/swagger-ui/swagger-ui-standalone-preset.js",
-            "/swagger-ui/swagger-ui.css",
-            "/webjars/swagger-ui",
-            "/webjars/swagger-ui/",
-            "/webjars/swagger-ui/swagger-ui-bundle.js",
-            "/webjars/swagger-ui/swagger-ui-standalone-preset.js",
-            "/webjars/swagger-ui/swagger-ui.css"
+            "/webjars"
     );
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
         String path = request.getPath().value();
+        
+        log.debug("JWT Filter processing path: {}", path);
 
         if (isPublicPath(path)) {
-            return chain.filter(exchange);
+            log.debug("Path is public, allowing through: {}", path);
+            return chain.filter(exchange).doOnTerminate(() -> log.debug("Filter chain completed for: {}", path));
         }
 
         String authHeader = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
@@ -56,6 +50,7 @@ public class JwtAuthenticationFilter implements WebFilter {
                 String email = jwtService.extractEmail(token);
                 String role = jwtService.extractRole(token);
 
+                log.debug("Valid JWT token for user: {}", email);
                 ServerHttpRequest mutatedRequest = request.mutate()
                         .header("X-User-Email", email)
                         .header("X-User-Role", role)
@@ -65,7 +60,8 @@ public class JwtAuthenticationFilter implements WebFilter {
             }
         }
 
-        return chain.filter(exchange);
+        log.debug("No valid JWT, passing through chain for path: {}", path);
+        return chain.filter(exchange).doOnTerminate(() -> log.debug("Filter chain completed for: {}", path));
     }
 
     private boolean isPublicPath(String path) {

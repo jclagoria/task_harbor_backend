@@ -1,20 +1,14 @@
 package com.task.harbor.infrastructure.config;
 
-import com.task.harbor.infrastructure.security.jwt.JwtAuthenticationFilter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
-import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
 @Configuration
 @EnableWebFluxSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
-    
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
     
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
@@ -27,11 +21,10 @@ public class SecurityConfig {
                         .pathMatchers("/actuator/**").permitAll()
                         .pathMatchers("/v3/**").permitAll()
                         .pathMatchers("/swagger-ui/**").permitAll()
-                        .pathMatchers("/swagger-ui.html").permitAll()
                         .pathMatchers("/webjars/**").permitAll()
+                        .pathMatchers("/swagger-ui.html").permitAll()
                         .anyExchange().authenticated()
                 )
-                .addFilterAt(jwtAuthenticationFilter, SecurityWebFiltersOrder.FIRST)
                 .build();
     }
 }
