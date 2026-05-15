@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <property name="LOG_DIR" value="${LOG_DIR:-./logs}"/>
-    <property name="APP_NAME" value="tmdb-backend"/>
+    <property name="LOG_DIR" value="${LOG_DIR:-./logs}" />
+    <property name="APP_NAME" value="task-harbor-backend" />
 
     <!-- JSON File Appender -->
     <appender name="JSON_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -42,19 +42,21 @@
     </appender>
 
     <!-- Kill ALL debug -->
-    <logger name="reactor" level="OFF"/>
-    <logger name="io.netty" level="OFF"/>
-    <logger name="io.github.resilience4j" level="OFF"/>
-    <logger name="org.springframework" level="OFF"/>
-    <logger name="org.hibernate" level="OFF"/>
-    <logger name="org.reflections" level="OFF"/>
-    
+    <logger name="reactor" level="OFF" />
+    <logger name="io.netty" level="OFF" />
+    <logger name="io.github.resilience4j" level="OFF" />
+    <logger name="org.hibernate" level="OFF" />
+    <logger name="org.reflections" level="OFF" />
+
     <!-- App only INFO -->
-    <logger name="com.api.tmdb" level="INFO"/>
+    <logger name="com.task.harbor" level="DEBUG" />
+    <logger name="org.springframework.r2dbc" level="INFO" />
+    <logger name="org.springframework.data.r2dbc" level="INFO" />
+    <logger name="io.r2dbc" level="INFO" />
 
     <root level="INFO">
-        <appender-ref ref="PLAIN_CONSOLE"/>
-        <appender-ref ref="JSON_FILE"/>
-        <appender-ref ref="ERROR_FILE"/>
+        <appender-ref ref="PLAIN_CONSOLE" />
+        <appender-ref ref="JSON_FILE" />
+        <appender-ref ref="ERROR_FILE" />
     </root>
 </configuration>

@@ -48,6 +48,6 @@ management:
 
 logging:
   level:
-    com.taskharbor: DEBUG
+    com.task.harbor: DEBUG
     org.springframework.r2dbc: DEBUG
     org.flywaydb: DEBUG
