@@ -36,6 +36,8 @@ public class AuthController {
             responseCode = "201",
             description = "User registered successfully",
             content = @Content(schema = @Schema(implementation = ApiResponseService.class)))
+    @ApiResponse(responseCode = "400", description = "Invalid request: missing required fields, invalid email format, or password does not meet requirements (min 8 chars, must start with letter, alphanumeric only)")
+    @ApiResponse(responseCode = "400", description = "Email already exists")
     public Mono<ResponseEntity<ApiResponseService<RegisterResponse>>> register(@Valid @RequestBody RegisterRequest request) {
         return registerUseCase.execute(request)
                 .map(user -> ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseService.success(user)));
@@ -47,6 +49,9 @@ public class AuthController {
             responseCode = "200",
             description = "Login successful",
             content = @Content(schema = @Schema(implementation = ApiResponseService.class)))
+    @ApiResponse(responseCode = "400", description = "Invalid request: missing required fields, invalid email format, or password does not meet requirements")
+    @ApiResponse(responseCode = "400", description = "Invalid credentials: email not found or password incorrect")
+    @ApiResponse(responseCode = "400", description = "Invalid TOTP code")
     public Mono<ResponseEntity<ApiResponseService<TokenResponse>>> login(@Valid @RequestBody LoginRequest request) {
         return loginUseCase.execute(request)
                 .map(token -> ResponseEntity.ok(ApiResponseService.success(token)));
@@ -66,6 +71,7 @@ public class AuthController {
             responseCode = "200",
             description = "Token refreshed successfully",
             content = @Content(schema = @Schema(implementation = ApiResponseService.class)))
+    @ApiResponse(responseCode = "400", description = "Invalid or expired refresh token")
     public Mono<ResponseEntity<ApiResponseService<TokenResponse>>> refresh(@RequestBody RefreshRequest request) {
         return refreshTokenUseCase.execute(request.refreshToken())
                 .map(token -> ResponseEntity.ok(ApiResponseService.success(token)));
@@ -89,6 +95,8 @@ public class AuthController {
             responseCode = "200",
             description = "Code verified",
             content = @Content(schema = @Schema(implementation = ApiResponseService.class)))
+    @ApiResponse(responseCode = "400", description = "Invalid or missing TOTP code")
+    @ApiResponse(responseCode = "400", description = "User not found or 2FA not setup")
     public Mono<ResponseEntity<ApiResponseService<Boolean>>> verify2fa(
             @RequestHeader("X-User-Id") String userId,
             @RequestBody TotpVerifyRequest request) {

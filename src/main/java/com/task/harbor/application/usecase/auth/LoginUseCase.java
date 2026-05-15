@@ -52,7 +52,7 @@ public class LoginUseCase {
                     );
                     String refreshToken = jwtService.generateRefreshToken(user.getEmail());
                     
-                    String refreshTokenHash = passwordService.hashPassword(refreshToken);
+                    String refreshTokenHash = passwordService.hashToken(refreshToken);
                     
                     Instant now = Instant.now();
                     Instant expiresAt = now.plus(7, ChronoUnit.DAYS);
