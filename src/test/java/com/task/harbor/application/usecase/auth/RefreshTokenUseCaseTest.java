@@ -69,7 +69,7 @@ class RefreshTokenUseCaseTest {
                 .build();
 
         AtomicInteger callCount = new AtomicInteger(0);
-        when(passwordService.hashPassword(anyString())).thenAnswer(inv -> {
+        when(passwordService.hashToken(anyString())).thenAnswer(inv -> {
             if (callCount.getAndIncrement() == 0) {
                 return "tokenHash";
             }
@@ -91,7 +91,7 @@ class RefreshTokenUseCaseTest {
 
     @Test
     void execute_InvalidToken() {
-        when(passwordService.hashPassword(anyString())).thenReturn("invalidHash");
+        when(passwordService.hashToken(anyString())).thenReturn("invalidHash");
         when(sessionRepository.findByRefreshTokenHash("invalidHash")).thenReturn(Mono.empty());
 
         StepVerifier.create(refreshTokenUseCase.execute("invalidToken"))
@@ -111,7 +111,7 @@ class RefreshTokenUseCaseTest {
                 .expiresAt(Instant.now().minus(1, ChronoUnit.DAYS))
                 .build();
 
-        when(passwordService.hashPassword(anyString())).thenReturn("tokenHash");
+        when(passwordService.hashToken(anyString())).thenReturn("tokenHash");
         when(sessionRepository.findByRefreshTokenHash("tokenHash")).thenReturn(Mono.just(session));
 
         StepVerifier.create(refreshTokenUseCase.execute(refreshToken))

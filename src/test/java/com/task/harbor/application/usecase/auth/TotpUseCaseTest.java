@@ -108,7 +108,7 @@ class TotpUseCaseTest {
         when(totpService.verifyCode("SECRET123", "000000")).thenReturn(false);
 
         StepVerifier.create(totpUseCase.verify(userId, "000000"))
-                .expectNext(false)
-                .verifyComplete();
+                .expectError(IllegalArgumentException.class)
+                .verify();
     }
 }
