@@ -32,7 +32,7 @@ public class RegisterUseCase {
                     Instant now = Instant.now();
                     String passwordHash = passwordService.hashPassword(request.password());
                     
-                    return userRepository.insertAndReturn(request.email(), passwordHash, "USER", tenantId, now, now)
+                    return userRepository.insertAndReturn(request.firstName(), request.lastName(), request.email(), passwordHash, "USER", tenantId, now, now)
                             .map(user -> new RegisterResponse(user.getId().toString(), user.getEmail()))
                             .doOnNext(response -> log.info("User registered successfully: {}", response.userId()));
                 });
