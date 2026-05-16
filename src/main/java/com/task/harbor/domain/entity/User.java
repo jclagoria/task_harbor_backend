@@ -25,6 +25,12 @@ public class User {
     @Id
     private UUID id;
 
+    @Column("first_name")
+    private String firstName;
+
+    @Column("last_name")
+    private String lastName;
+
     @Column("email")
     private String email;
 
