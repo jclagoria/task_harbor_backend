@@ -38,3 +38,4 @@ build/
 /.env
 /skills-lock.json
 /docs/plans/
+.codegraph/

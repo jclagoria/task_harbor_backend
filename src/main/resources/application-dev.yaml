@@ -16,6 +16,10 @@ spring:
       enabled: true
       initial-size: 10
       max-size: 100
+      max-life-time: 30m
+      max-idle-time: 10m
+      max-acquire-time: 5s
+      validation-query: SELECT 1
 
   flyway:
     enabled: true
